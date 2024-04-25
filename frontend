@@ -1,0 +1,58 @@
+# Connect to the database
+!pip install sqlalchemy
+from sqlalchemy import create_engine
+
+# Replace 'username', 'password', 'host', and 'database_name' with your actual credentials
+engine = create_engine('mysql+pymysql://username:password@host/database_name')
+
+# Define a function to execute SQL queries
+def execute_query(query):
+    with engine.connect() as connection:
+        result = connection.execute(query)
+        return result.fetchall()
+
+
+
+# Get all listings available in a specific location within a price range
+location = 'New York'
+min_price = 50
+max_price = 200
+query = f"""
+SELECT *
+FROM Listings
+WHERE location = '{location}'
+AND price_per_night >= {min_price}
+AND price_per_night <= {max_price};
+"""
+listings_in_location = execute_query(query)
+
+# Get all reviews for a particular listing
+listing_id = 123
+query = f"""
+SELECT *
+FROM Reviews
+WHERE listing_id = {listing_id};
+"""
+reviews_for_listing = execute_query(query)
+
+# Make a booking for a specific listing by a user
+user_id = 456
+listing_id = 123
+check_in_date = '2024-05-01'
+check_out_date = '2024-05-05'
+total_price = 800
+query = f"""
+INSERT INTO Bookings (listing_id, user_id, check_in_date, check_out_date, total_price)
+VALUES ({listing_id}, {user_id}, '{check_in_date}', '{check_out_date}', {total_price});
+"""
+execute_query(query)
+
+# Get all bookings made by a user
+user_id = 456
+query = f"""
+SELECT *
+FROM Bookings
+WHERE user_id = {user_id};
+"""
+user_bookings = execute_query(query)
+
